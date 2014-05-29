@@ -1,0 +1,20 @@
+﻿<AddIn name        = "ComponentAddin"
+       author      = "William MacDonald"
+       url         = ""
+       description = "TODO: Put description here">
+
+	
+	<Manifest>
+        <Identity name="ComponentAddin" version="@ComponentAddin.dll" />
+		<Dependency addin="SharpDevelop" version="4.4" />
+    </Manifest>
+	
+	<Runtime>
+		<Import assembly = "ComponentAddin.dll"/>
+	</Runtime>
+
+	<Path name="/SharpDevelop/BackendBindings/Templates">
+		<Directory id="ComponentAddin" path="./Templates"/>
+	</Path>	
+	
+</AddIn>
