@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template author       = "William MacDonald"
           created      = "05/29/2014"
-          lastModified = "05/29/2014"
+          lastModified = "05/30/2014"
           version      = "1.0">
 	
 	<!-- Template Header -->
@@ -74,8 +74,11 @@ namespace ${StandardNamespace}
 namespace ${StandardNamespace}
 {
     using System;
+    using System.Text;
     using System.ComponentModel;
+    using System.Reflection;
     using System.Runtime.InteropServices;
+    using Microsoft.Win32;
     
 	/// <summary>
 	/// Description of COMComponent1.
@@ -88,24 +91,13 @@ namespace ${StandardNamespace}
     ComVisible(true)]
 	public partial class COMComponent1 : Component, ICOMComponent1Wrapper
 	{    
+		#region COM Guid's
         public const string guidCOMComponent1 = "${GUID}";
         public const string guidICOMComponent1Wrapper = "${GUID}";
         public const string guidICOMComponent1Events = "${GUID}";
+		#endregion
 
-        private string name;
-
-        public string Name
-        {
-            get
-            {
-                return this.name;
-            }
-            set
-            {
-                this.name = value;
-            }
-        }
-        
+        #region COM Contructors
 		public COMComponent1()
 		{
 			//
@@ -131,6 +123,22 @@ namespace ${StandardNamespace}
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
 		}
+        #endregion
+
+        #region COM Members
+        private string name;
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            set
+            {
+                this.name = value;
+            }
+        }
         
         public void Open(string info)
         {
@@ -151,10 +159,72 @@ namespace ${StandardNamespace}
                 this.Closed();
             }
         }
-                
+        #endregion
+
+        #region COM Events        
         public event COMComponent1EventHandler Closing;
         
         public event COMComponent1EventHandler2 Closed;
+        #endregion
+
+        #region COM Registration
+        ///	<summary>
+        ///	Register the class as a	control	and	set	it's CodeBase entry
+        ///	</summary>
+        ///	<param name="key">The registry key of the control</param>
+        [ComRegisterFunction()]
+        protected static void RegisterClass(string key)
+        {
+            // Strip off HKEY_CLASSES_ROOT\ from the passed key as I don't need it
+            StringBuilder sb = new StringBuilder(key);
+            sb.Replace(@"HKEY_CLASSES_ROOT\", "");
+
+            // Open the CLSID\{guid} key for write access
+            RegistryKey k = Registry.ClassesRoot.OpenSubKey(sb.ToString(), true);
+
+            // And create	the	'Control' key -	this allows	it to show up in
+            // the ActiveX control container
+            RegistryKey ctrl = k.CreateSubKey("Control");
+            ctrl.Close();
+
+            // Next create the CodeBase entry	- needed if	not	string named and GACced.
+            RegistryKey inprocServer32 = k.OpenSubKey("InprocServer32", true);
+            inprocServer32.SetValue("CodeBase", Assembly.GetExecutingAssembly().CodeBase);
+            inprocServer32.Close();
+
+            // Finally close the main	key
+            k.Close();
+        }
+
+        ///	<summary>
+        ///	Called to unregister the control
+        ///	</summary>
+        ///	<param name="key">Tke registry key</param>
+        [ComUnregisterFunction()]
+        protected static void UnregisterClass(string key)
+        {
+            StringBuilder sb = new StringBuilder(key);
+            sb.Replace(@"HKEY_CLASSES_ROOT\", "");
+
+            // Open	HKCR\CLSID\{guid} for write	access
+            RegistryKey k = Registry.ClassesRoot.OpenSubKey(sb.ToString(), true);
+
+            if (k != null)
+            {
+                // Delete the 'Control'	key, but don't throw an	exception if it	does not exist
+                k.DeleteSubKey("Control", false);
+
+                // Next	open up	InprocServer32
+                RegistryKey inprocServer32 = k.OpenSubKey("InprocServer32", true);
+
+                // And delete the CodeBase key,	again not throwing if missing
+                k.DeleteSubKey("CodeBase", false);
+
+                // Finally close the main key
+                k.Close();
+            }
+        }      
+        #endregion
 	}
 }
 ]]></File>
@@ -164,10 +234,13 @@ namespace ${StandardNamespace}
     using System;
     using System.Runtime.InteropServices;
         
+	#region COM Delegates
     public delegate void COMComponent1EventHandler(string status);    
     
     public delegate void COMComponent1EventHandler2();
+    #endregion
     
+    #region COM Wrapper Interface
 	/// <summary>
 	/// Description of ICOMComponent1Wrapper.
 	/// </summary>
@@ -189,7 +262,9 @@ namespace ${StandardNamespace}
         [DispId(31)]
         void Close();
 	}
-    
+    #endregion
+
+    #region COM Event Interface
 	/// <summary>
 	/// Description of ICOMComponent1Events.
 	/// </summary>
@@ -203,7 +278,8 @@ namespace ${StandardNamespace}
         
         [DispId(21)]
         void Closed();
-	}    
+	}
+    #endregion    
 }
 ]]></File>
 

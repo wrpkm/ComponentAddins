@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<Template author="William MacDonald"  
+          created      = "05/30/2014"
+          lastModified = "05/30/2014"
+          version="1.0">
+	
+	<Config
+		name        = "OCX UserControl"
+		icon        = "C#.File.Form"
+		category    = "C#"
+		subcategory = "${res:Templates.File.Categories.WindowsApplications}"
+		defaultname = "OCXUserControl${Number}.cs"
+		language    = "C#"
+	/>
+	 
+	<Description>${res:Templates.File.WindowsUserControl.Description}</Description>
+	
+	<References>
+		<Reference include="System.Drawing" />
+		<Reference include="System.Windows.Forms" />
+		<Reference include="Microsoft.VisualStudio.OLE.Interop" />
+	</References>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<!-- Designer file must come first, so the design tab is shown correctly -->
+<File name="${Path}/${FileNameWithoutExtension}.Designer.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+	partial class ${ClassName}
+	{
+		/// <summary>
+		/// Designer variable used to keep track of non-visual components.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
+		
+		/// <summary>
+		/// Disposes resources used by the control.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				if (components != null) {
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+		
+		/// <summary>
+		/// This method is required for Windows Forms designer support.
+		/// Do not change the method contents inside the source code editor. The Forms designer might
+		/// not be able to load this method if it was changed manually.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			// 
+			// ${ClassName}
+			// 
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Name = "${ClassName}";
+		}
+	}
+}
+]]></File>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+	using System;
+	using System.ComponentModel;
+	using System.Drawing;
+	using System.Windows.Forms;
+	using System.Runtime.InteropServices;
+    using Microsoft.VisualStudio.OLE.Interop;
+	using Microsoft.Win32;
+
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+    [ComVisible(true)]
+    [Guid(${ClassName}.guid${ClassName})]
+    [ProgId("${StandardNamespace}.${ClassName}")]
+    [ClassInterface(ClassInterfaceType.AutoDispatch)]
+	public partial class ${ClassName} : UserControl
+	{
+        public const string guid${ClassName} = "${GUID}";
+
+		public ${ClassName}()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+		}
+
+		#region COM Registration
+        [ComRegisterFunction]
+        static void ComRegister(Type t)
+        {
+            string keyName = @"CLSID\" + t.GUID.ToString("B");
+            using (RegistryKey key =
+                Registry.ClassesRoot.OpenSubKey(keyName, true))
+            {
+                key.CreateSubKey("Control").Close();
+                using (RegistryKey subkey = key.CreateSubKey("MiscStatus"))
+                {
+                    // 131456 decimal == 0x20180.
+                    long val = (long)
+                        (OLEMISC.OLEMISC_INSIDEOUT
+                        | OLEMISC.OLEMISC_ACTIVATEWHENVISIBLE
+                        | OLEMISC.OLEMISC_SETCLIENTSITEFIRST);
+                    subkey.SetValue("", val);
+                }
+                using (RegistryKey subkey = key.CreateSubKey("TypeLib"))
+                {
+                    Guid libid =
+                        Marshal.GetTypeLibGuidForAssembly(t.Assembly);
+                    subkey.SetValue("", libid.ToString("B"));
+                }
+                using (RegistryKey subkey = key.CreateSubKey("Version"))
+                {
+                    Version ver = t.Assembly.GetName().Version;
+                    string version =
+                      string.Format("{0}.{1}", ver.Major, ver.Minor);
+                    subkey.SetValue("", version);
+                }
+            }
+        }
+
+        [ComUnregisterFunction]
+        static void ComUnregister(Type t)
+        {
+            // Delete the entire CLSID\{clsid} subtree for this component.
+            string keyName = @"CLSID\" + t.GUID.ToString("B");
+            Registry.ClassesRoot.DeleteSubKeyTree(keyName);
+        }
+		#endregion
+	}
+}
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+
