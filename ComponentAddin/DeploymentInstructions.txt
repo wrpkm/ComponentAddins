@@ -1,0 +1,2 @@
+nuget.exe pack ComponentAddin.nuspec
+nuget.exe push ComponentAddin.1.0.0.0.nupkg -ApiKey <MyGetApiKey> -Source https://www.myget.org/F/sharpdevelop/

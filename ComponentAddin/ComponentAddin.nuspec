@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>COMAddin</id>
+    <id>ComponentAddin</id>
     <version>1.0.0.0</version>
     <authors>William MacDonald</authors>
     <owners>William MacDonald</owners>
@@ -10,7 +10,7 @@
     <tags>TODO: Put tags here</tags>
   </metadata>
   <files>
-    <file src="bin\Release\COMAddin.addin" target="" />
-    <file src="Templates\*.*" target="Templates" />
+    <file src="bin\Release\ComponentAddin.addin" target="" />
+    <file src="bin\Release\Templates\*.*" target="Templates" />
   </files>
 </package>

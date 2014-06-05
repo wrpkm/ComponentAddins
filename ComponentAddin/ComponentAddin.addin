@@ -1,20 +1,15 @@
 ﻿<AddIn name        = "ComponentAddin"
        author      = "William MacDonald"
-       url         = ""
-       description = "TODO: Put description here">
-
+       url         = "https://github.com/wrpkm/ComponentAddins"
+       description = "Templates for Windows Components, COM Components and OCX Components.">
 	
 	<Manifest>
-        <Identity name="ComponentAddin" version="@ComponentAddin.dll" />
-		<Dependency addin="SharpDevelop" version="4.4" />
+        <Identity name="ComponentAddin" version="1.0.0" />
+		<Dependency addin="SharpDevelop" version="5.0" />
     </Manifest>
 	
-	<Runtime>
-		<Import assembly = "ComponentAddin.dll"/>
-	</Runtime>
-
 	<Path name="/SharpDevelop/BackendBindings/Templates">
-		<Directory id="ComponentAddin" path="./Templates"/>
+		<TemplateFile id="ComponentAddin" path="./Templates"/>
 	</Path>	
 	
 </AddIn>
