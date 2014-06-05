@@ -3,10 +3,10 @@
   <metadata>
     <id>COMAddin</id>
     <version>1.0.0.0</version>
-    <authors>billm</authors>
-    <owners>billm</owners>
-    <projectUrl>TODO Put project web URL here</projectUrl>
-    <description>TODO: Put description here</description>
+    <authors>William MacDonald</authors>
+    <owners>William MacDonald</owners>
+    <projectUrl>https://github.com/wrpkm/ComponentAddins</projectUrl>
+    <description>Templates for Windows Components, COM Components and OCX Components.</description>
     <tags>TODO: Put tags here</tags>
   </metadata>
   <files>
