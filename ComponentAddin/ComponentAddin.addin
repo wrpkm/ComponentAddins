@@ -5,7 +5,7 @@
 	
 	<Manifest>
         <Identity name="ComponentAddin" version="1.0.0" />
-		<Dependency addin="SharpDevelop" version="5.0" />
+		<Dependency addin="SharpDevelop" version="5.1" />
     </Manifest>
 	
 	<Path name="/SharpDevelop/BackendBindings/Templates">
